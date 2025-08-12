@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Visualizza informazioni sul tuo IP pubblico e la geolocalizzazione approssimativa, con mappa interattiva e dettagli ISP.">
+  <title>Info IP & Geolocalizzazione</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --main-bg: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%);
+      --glass-bg: rgba(255,255,255,0.92);
+      --glass-blur: blur(12px);
+      --glass-shadow: 0 10px 32px 0 rgba(31, 38, 135, 0.22), 0 2px 10px #00b4d8;
+      --primary: #2193b0;
+      --accent: #6dd5ed;
+      --label: #32465a;
+      --key: #222;
+      --val: #0077b6;
+      --btn: #00b4d8;
+      --btn-hover: #2193b0;
+      --footer: #fff;
+      --footer-shadow: 0 1px 3px #0096c7, 0 1px 10px #caf0f8;
+      --shadow-small: 0 1px 7px rgba(0,180,216,0.10);
+      --shadow-hover: 0 2px 14px #00b4d833;
+    }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      font-family: 'Montserrat', Arial, sans-serif;
+      background: var(--main-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+    .hidden { display: none !important; }
+    section.glass-card {
+      background: var(--glass-bg);
+      backdrop-filter: var(--glass-blur);
+      border-radius: 30px;
+      box-shadow: var(--glass-shadow);
+      padding: 2.4rem 2.7rem 1.5rem;
+      max-width: 410px;
+      width: 100%;
+      text-align: center;
+      margin-top: 2.3rem;
+      position: relative;
+      animation: floatCard 2.7s ease-in-out infinite alternate;
+    }
+    @keyframes floatCard {
+      0% { transform: translateY(0) scale(1); }
+      100% { transform: translateY(-8px) scale(1.012); }
+    }
+    h1.label {
+      color: var(--label);
+      font-size: 1.18rem;
+      margin-bottom: 1.5em;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-shadow: 0 1px 2px #f6fbfc88;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5em;
+    }
+    h1.label .bi {
+      color: var(--accent);
+      font-size: 1.25rem;
+    }
+    .ip {
+      font-size: clamp(1.5rem, 2vw + 1rem, 2.8rem);
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: 2px;
+      margin-bottom: 0.18em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.7em;
+      text-shadow: 0 2px 10px #00b4d855, 0 1px 0 #fff;
+    }
+    .ip .bi {
+      color: #00b4d8;
+      font-size: 2.4rem;
+      animation: glowIcon 2.1s ease-in-out infinite alternate;
+    }
+    @keyframes glowIcon {
+      0% { filter: drop-shadow(0 0 3px #00b4d8); }
+      100% { filter: drop-shadow(0 0 13px #00b4d8); }
+    }
+    dl.info-list {
+      padding: 0;
+      margin: 0 0 1.5em;
+      font-size: 1.14rem;
+      text-align: left;
+    }
+    dl.info-list div {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1em;
+      gap: 0.9em;
+      border-left: 5px solid var(--primary);
+      background: #f6fbfc;
+      border-radius: 12px;
+      padding: 0.45em 0.9em;
+      box-shadow: var(--shadow-small);
+      transition: box-shadow 0.2s, background 0.2s;
+    }
+    dl.info-list div:hover {
+      box-shadow: var(--shadow-hover);
+      background: #e6faff;
+    }
+    dt.info-key {
+      font-weight: 700;
+      color: var(--key);
+      min-width: 92px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.3em;
+      font-size: 1.08rem;
+    }
+    dt.info-key .bi {
+      color: var(--primary);
+      font-size: 1.11rem;
+    }
+    dd.info-value {
+      color: var(--val);
+      word-break: break-word;
+      flex: 1;
+      font-size: 1.09rem;
+      font-weight: 600;
+      margin: 0;
+    }
+    .flag {
+      width: 26px;
+      height: 19px;
+      border-radius: 3px;
+      margin-right: 0.32em;
+      border: 1px solid #ddd;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.07);
+      vertical-align: middle;
+      background: #fff;
+    }
+    .map-container {
+      margin-top: 1.18em;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 5px 18px #00b4d822, 0 2px 10px #fff;
+      width: 100%;
+      max-width: 350px;
+      height: 225px;
+      margin-inline: auto;
+      border: 3px solid #caf0f8;
+      background: #f8feff;
+      transition: border-color 0.2s;
+    }
+    .map-container:hover { border-color: #00b4d8; }
+    iframe {
+      border: none;
+      width: 100%;
+      height: 100%;
+      display: block;
+      background: #e9f7fa;
+    }
+    .gmaps-btn {
+      margin: 0.70em 0 0.15em;
+      background: var(--btn);
+      color: #fff;
+      padding: 0.7em 1.45em;
+      border: none;
+      border-radius: 9px;
+      text-decoration: none;
+      font-size: 1.12rem;
+      font-weight: 700;
+      box-shadow: 0 1px 9px #00b4d845;
+      transition: background 0.18s, box-shadow 0.18s, transform 0.12s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.37em;
+      letter-spacing: 0.02em;
+      outline: none;
+    }
+    .gmaps-btn .bi { font-size: 1.17rem; }
+    .gmaps-btn:hover, .gmaps-btn:focus {
+      background: var(--btn-hover);
+      color: #fff;
+      box-shadow: 0 2px 14px #00b4d866;
+      transform: translateY(-2px) scale(1.03);
+    }
+    .gmaps-btn:focus { outline: 3px solid var(--accent); }
+    @media (max-width: 480px) {
+      section.glass-card {
+        padding: 1.2rem 0.4rem 0.7rem;
+        max-width: 98vw;
+      }
+      .map-container {
+        max-width: 98vw;
+        height: 135px;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; }
+    }
+    footer {
+      margin-top: 2.7rem;
+      color: var(--footer);
+      font-size: 1.04rem;
+      opacity: 0.71;
+      text-shadow: var(--footer-shadow);
+      letter-spacing: 0.04em;
+    }
+    section.glass-card::before {
+      content: "";
+      position: absolute;
+      inset: -8px;
+      border-radius: 38px;
+      background: linear-gradient(120deg, #00b4d8cc, #caf0f866 90%);
+      filter: blur(28px);
+      opacity: 0.28;
+      pointer-events: none;
+    }
+    section.glass-card > * { position: relative; z-index: 1; }
+  </style>
+</head>
+<body>
+  <section class="glass-card" role="main" aria-labelledby="info-title">
+    <h1 id="info-title" class="label"><i class="bi bi-globe2"></i> Info sul tuo IP &amp; posizione pubblica</h1>
+    <div class="ip"><i class="bi bi-hdd-network"></i><span id="ip" aria-live="polite">...</span></div>
+    <dl class="info-list" id="details">
+      <div><dt class="info-key"><i class="bi bi-geo-alt"></i> Città:</dt><dd class="info-value" id="city" aria-live="polite">...</dd></div>
+      <div><dt class="info-key"><i class="bi bi-signpost"></i> Regione:</dt><dd class="info-value" id="region" aria-live="polite">...</dd></div>
+      <div><dt class="info-key"><i class="bi bi-flag"></i> Nazione:</dt>
+        <dd class="info-value" id="country"><img id="flag" class="flag" alt="Bandiera" loading="lazy"> <span id="countryname" aria-live="polite">...</span></dd>
+      </div>
+      <div><dt class="info-key"><i class="bi bi-mailbox"></i> CAP:</dt><dd class="info-value" id="postal" aria-live="polite">...</dd></div>
+      <div><dt class="info-key"><i class="bi bi-clock-history"></i> Fuso:</dt><dd class="info-value" id="timezone" aria-live="polite">...</dd></div>
+      <div><dt class="info-key"><i class="bi bi-building"></i> ISP:</dt><dd class="info-value" id="org" aria-live="polite">...</dd></div>
+      <div><dt class="info-key"><i class="bi bi-compass"></i> Lat/Lon:</dt><dd class="info-value" id="coords" aria-live="polite">...</dd></div>
+    </dl>
+    <a class="gmaps-btn hidden" id="gmaps" href="#" target="_blank" rel="noopener noreferrer"><i class="bi bi-geo"></i>Apri su Google Maps</a>
+    <div class="map-container hidden" id="map-container">
+      <iframe id="map" title="Mappa posizione IP" loading="lazy"></iframe>
+    </div>
+  </section>
+  <footer>
+    Realizzato con <i class="bi bi-heart-fill"></i> &middot; Powered by 
+    <a href="https://ipapi.co/" style="color:#fff;text-decoration:underline;" target="_blank" rel="noopener noreferrer">ipapi.co</a> &amp; 
+    <a href="https://www.openstreetmap.org/" style="color:#fff;text-decoration:underline;" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>
+  </footer>
+  <script>
+    const el = id => document.getElementById(id);
+
+    (async () => {
+      try {
+        const res = await fetch('https://ipapi.co/json/');
+        if (!res.ok) throw new Error('Network response was not ok');
+        const data = await res.json();
+
+        el('ip').textContent = data.ip ?? 'N.D.';
+        el('city').textContent = data.city ?? 'N.D.';
+        el('region').textContent = data.region ?? 'N.D.';
+        el('countryname').textContent = data.country_name ?? 'N.D.';
+
+        if (data.country) {
+          el('flag').src = `https://flagcdn.com/24x18/${data.country.toLowerCase()}.png`;
+          el('flag').classList.remove('hidden');
+        } else {
+          el('flag').classList.add('hidden');
+        }
+
+        el('postal').textContent = data.postal ?? 'N.D.';
+        el('timezone').textContent = data.timezone ?? 'N.D.';
+        el('org').textContent = data.org ?? 'N.D.';
+
+        if (typeof data.latitude === 'number' && typeof data.longitude === 'number') {
+          const lat = data.latitude;
+          const lon = data.longitude;
+          el('coords').textContent = `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+
+          const gmaps = el('gmaps');
+          gmaps.href = `https://www.google.com/maps?q=${lat},${lon}`;
+          gmaps.classList.remove('hidden');
+
+          const mapURL = `https://www.openstreetmap.org/export/embed.html?bbox=${lon-0.08},${lat-0.055},${lon+0.08},${lat+0.055}&layer=mapnik&marker=${lat},${lon}`;
+          el('map').src = mapURL;
+          el('map-container').classList.remove('hidden');
+        } else {
+          el('coords').textContent = 'N.D.';
+        }
+
+      } catch (error) {
+        ['ip','city','region','countryname','postal','timezone','org','coords']
+          .forEach(id => el(id).textContent = 'Errore');
+        el('flag').classList.add('hidden');
+      }
+    })();
+  </script>
+</body>
+</html>
