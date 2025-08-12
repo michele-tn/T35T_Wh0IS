@@ -231,7 +231,7 @@
     <h1 id="info-title" class="label"><i class="bi bi-globe2"></i> Info sul tuo IP &amp; posizione pubblica</h1>
     <div class="ip"><i class="bi bi-hdd-network"></i><span id="ip" aria-live="polite">...</span></div>
     <dl class="info-list" id="details">
-      <div><dt class="info-key"><i class="bi bi-geo-alt"></i> Citt‡:</dt><dd class="info-value" id="city" aria-live="polite">...</dd></div>
+      <div><dt class="info-key"><i class="bi bi-geo-alt"></i> Citt√†:</dt><dd class="info-value" id="city" aria-live="polite">...</dd></div>
       <div><dt class="info-key"><i class="bi bi-signpost"></i> Regione:</dt><dd class="info-value" id="region" aria-live="polite">...</dd></div>
       <div><dt class="info-key"><i class="bi bi-flag"></i> Nazione:</dt>
         <dd class="info-value" id="country"><img id="flag" class="flag" alt="Bandiera" loading="lazy"> <span id="countryname" aria-live="polite">...</span></dd>
@@ -301,3 +301,4 @@
   </script>
 </body>
 </html>
+
